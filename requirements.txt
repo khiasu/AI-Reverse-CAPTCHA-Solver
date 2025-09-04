@@ -8,6 +8,7 @@ pandas>=2.0.0
 matplotlib>=3.7.0
 
 # Image Processing and CAPTCHA Generation
+opencv-python-headless>=4.8.0
 captcha>=0.4.0
 Pillow>=10.0.0
 
