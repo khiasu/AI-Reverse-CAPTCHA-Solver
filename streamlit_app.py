@@ -10,7 +10,13 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import and run the main demo
-from app.captcha_demo import main
+try:
+    from app.captcha_demo import main
+except ImportError:
+    # Direct import for Streamlit Cloud
+    import streamlit as st
+    st.error("Import error. Please use app/captcha_demo.py as the main file instead.")
+    st.stop()
 
 if __name__ == "__main__":
     main()
