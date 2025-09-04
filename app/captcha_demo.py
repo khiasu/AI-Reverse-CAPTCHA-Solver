@@ -222,12 +222,16 @@ st.markdown("""
 @st.cache_resource
 def load_model():
     """Load the trained CAPTCHA model."""
-    model_path = "model/best_model.h5"
-    if not os.path.exists(model_path):
-        model_path = "model/model.h5"
+    # Try both model paths with absolute paths
+    import os
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    model_path1 = os.path.join(base_dir, "model", "best_model.h5")
+    model_path2 = os.path.join(base_dir, "model", "model.h5")
     
-    if os.path.exists(model_path):
-        return CaptchaInference(model_path)
+    if os.path.exists(model_path1):
+        return CaptchaInference(model_path1)
+    elif os.path.exists(model_path2):
+        return CaptchaInference(model_path2)
     return None
 
 

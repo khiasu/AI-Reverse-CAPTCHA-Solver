@@ -118,7 +118,7 @@ class CaptchaCNNModel:
         model.compile(
             optimizer=optimizers.Adam(learning_rate=0.001),
             loss='categorical_crossentropy',
-            metrics=['accuracy']
+            metrics=['accuracy'] * self.captcha_length  # One accuracy metric per output
         )
         
         self.model = model
