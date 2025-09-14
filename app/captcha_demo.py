@@ -94,21 +94,21 @@ def get_modern_css(theme='dark'):
         }
     else:  # light theme
         colors = {
-            'bg-primary': '#FAFAFA',
+            'bg-primary': '#FEFEFE',
             'bg-secondary': '#FFFFFF',
-            'bg-tertiary': '#F5F5F7',
+            'bg-tertiary': '#F8F9FA',
             'bg-card': '#FFFFFF',
-            'bg-hover': '#F0F0F2',
-            'text-primary': '#1A1A1B',
-            'text-secondary': '#525259',
-            'text-muted': '#8E8E93',
-            'accent-primary': '#8B5FBF',
-            'accent-secondary': '#6B46C1',
-            'accent-light': '#A78BFA',
-            'border': '#E5E5E7',
-            'border-hover': '#D1D1D6',
-            'shadow': 'rgba(0, 0, 0, 0.1)',
-            'shadow-strong': 'rgba(0, 0, 0, 0.15)'
+            'bg-hover': '#F1F3F4',
+            'text-primary': '#1A1A1A',
+            'text-secondary': '#4A4A4A',
+            'text-muted': '#6F6F6F',
+            'accent-primary': '#7C3AED',
+            'accent-secondary': '#5B21B6',
+            'accent-light': '#8B5CF6',
+            'border': '#E2E8F0',
+            'border-hover': '#CBD5E1',
+            'shadow': 'rgba(0, 0, 0, 0.08)',
+            'shadow-strong': 'rgba(0, 0, 0, 0.12)'
         }
     
     return f"""
@@ -469,6 +469,186 @@ def get_modern_css(theme='dark'):
         transform: scale(1.02);
         box-shadow: 0 8px 24px var(--shadow-strong);
     }}
+    
+    /* Light mode specific fixes */
+    .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {{
+        color: var(--text-primary) !important;
+    }}
+    
+    .stMarkdown strong {{
+        color: var(--text-primary) !important;
+        font-weight: 600 !important;
+    }}
+    
+    .stDataFrame {{
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius-md) !important;
+    }}
+    
+    .stDataFrame [data-testid="stDataFrameResizable"] {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+    }}
+    
+    .stDataFrame table {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+    }}
+    
+    .stDataFrame table th {{
+        background: var(--bg-tertiary) !important;
+        color: var(--text-primary) !important;
+        border-bottom: 1px solid var(--border) !important;
+    }}
+    
+    .stDataFrame table td {{
+        color: var(--text-secondary) !important;
+        border-bottom: 1px solid var(--border) !important;
+    }}
+    
+    .stAlert {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border) !important;
+    }}
+    
+    .stInfo {{
+        background: linear-gradient(135deg, #E0F2FE, #F0F9FF) !important;
+        color: #0C4A6E !important;
+        border-left: 4px solid #0EA5E9 !important;
+    }}
+    
+    .stWarning {{
+        background: linear-gradient(135deg, #FEF3C7, #FFFBEB) !important;
+        color: #92400E !important;
+        border-left: 4px solid #F59E0B !important;
+    }}
+    
+    .stError {{
+        background: linear-gradient(135deg, #FEE2E2, #FEF2F2) !important;
+        color: #991B1B !important;
+        border-left: 4px solid #EF4444 !important;
+    }}
+    
+    .stSuccess {{
+        background: linear-gradient(135deg, #D1FAE5, #ECFDF5) !important;
+        color: #065F46 !important;
+        border-left: 4px solid #10B981 !important;
+    }}
+    
+    /* Text input styling */
+    .stTextInput > div > div > input {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius-sm) !important;
+    }}
+    
+    .stTextInput > div > div > input:focus {{
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2) !important;
+    }}
+    
+    /* Spinner styling */
+    .stSpinner > div {{
+        border-color: var(--border) var(--border) var(--accent-primary) var(--accent-primary) !important;
+    }}
+    
+    /* Select box styling */
+    .stSelectbox > div > div {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border) !important;
+    }}
+    
+    /* Progress bar */
+    .stProgress > div > div > div {{
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-light)) !important;
+    }}
+    
+    /* Sidebar (if used) */
+    .css-1d391kg {{
+        background: var(--bg-secondary) !important;
+        border-right: 1px solid var(--border) !important;
+    }}
+    
+    /* Code blocks */
+    .stCode {{
+        background: var(--bg-tertiary) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border) !important;
+    }}
+    
+    /* JSON display */
+    .stJson {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border) !important;
+    }}
+    
+    /* Global text color fixes */
+    * {{
+        color: inherit;
+    }}
+    
+    .stApp > div {{
+        color: var(--text-primary);
+    }}
+    
+    /* Fix all text elements */
+    p, div, span, label, h1, h2, h3, h4, h5, h6 {{
+        color: var(--text-primary) !important;
+    }}
+    
+    .stMarkdown div {{
+        color: var(--text-primary) !important;
+    }}
+    
+    .stText {{
+        color: var(--text-primary) !important;
+    }}
+    
+    /* Override Streamlit defaults for light mode */
+    .main .block-container {{
+        color: var(--text-primary) !important;
+    }}
+    
+    [data-testid="stMarkdownContainer"] {{
+        color: var(--text-primary) !important;
+    }}
+    
+    [data-testid="stMarkdownContainer"] p {{
+        color: var(--text-primary) !important;
+    }}
+    
+    [data-testid="stMarkdownContainer"] h1,
+    [data-testid="stMarkdownContainer"] h2,
+    [data-testid="stMarkdownContainer"] h3,
+    [data-testid="stMarkdownContainer"] h4,
+    [data-testid="stMarkdownContainer"] h5,
+    [data-testid="stMarkdownContainer"] h6 {{
+        color: var(--text-primary) !important;
+    }}
+    
+    /* Tab content */
+    [data-testid="stTabPanel"] {{
+        color: var(--text-primary) !important;
+    }}
+    
+    /* Metric labels and values */
+    [data-testid="metric-container"] {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+    }}
+    
+    [data-testid="metric-container"] label {{
+        color: var(--text-secondary) !important;
+    }}
+    
+    [data-testid="metric-container"] [data-testid="metric-value"] {{
+        color: var(--text-primary) !important;
+    }}
 </style>
 """
 
@@ -709,7 +889,7 @@ def main():
                         ai_data = st.session_state.ai_result
                         st.markdown("""
                         <div style='text-align: center; padding: 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border);'>
-                            <h4>🤖 AI Solution</h4>
+                            <h4 style='color: var(--text-primary); margin: 0 0 1rem 0;'>🤖 AI Solution</h4>
                             <div style='font-size: 2rem; font-weight: bold; color: var(--accent-primary); font-family: monospace; margin: 1rem 0;'>{}</div>
                             <div style='color: var(--text-secondary);'>Time: {:.0f}ms | Confidence: {:.1f}%</div>
                         </div>
@@ -719,7 +899,7 @@ def main():
                 with col_vs:
                     st.markdown("""
                     <div style='text-align: center; padding: 2rem 0;'>
-                        <h2 style='color: var(--accent-primary);'>VS</h2>
+                        <h2 style='color: var(--accent-primary); margin: 0;'>VS</h2>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -746,7 +926,7 @@ def main():
                         
                         st.markdown("""
                         <div style='text-align: center; padding: 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border);'>
-                            <h4>👤 Your Solution</h4>
+                            <h4 style='color: var(--text-primary); margin: 0 0 1rem 0;'>👤 Your Solution</h4>
                             <div style='font-size: 2rem; font-weight: bold; color: var(--text-primary); font-family: monospace; margin: 1rem 0;'>{}</div>
                             <div style='color: var(--text-secondary);'>Time: {:.1f}s | {}</div>
                         </div>
@@ -754,7 +934,7 @@ def main():
                     else:
                         st.markdown("""
                         <div style='text-align: center; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-lg); border: 2px dashed var(--border);'>
-                            <h4>👤 Human Challenge</h4>
+                            <h4 style='color: var(--text-primary); margin: 0 0 1rem 0;'>👤 Human Challenge</h4>
                             <p style='color: var(--text-muted); margin: 1rem 0;'>Start the challenge to compete!</p>
                         </div>
                         """, unsafe_allow_html=True)
