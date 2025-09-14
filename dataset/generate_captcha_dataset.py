@@ -7,7 +7,8 @@ import os
 import random
 import string
 import csv
-from captcha.image import ImageCaptcha
+# from captcha.image import ImageCaptcha  # Commented out due to import issues
+from PIL import ImageFont, ImageDraw
 import numpy as np
 from PIL import Image, ImageFilter, ImageEnhance
 import argparse
@@ -35,14 +36,20 @@ class CaptchaDatasetGenerator:
         os.makedirs(self.output_dir, exist_ok=True)
         os.makedirs(os.path.dirname(self.csv_file), exist_ok=True)
         
-        # Initialize CAPTCHA generator with varied fonts
-        self.image_captcha = ImageCaptcha(
-            width=200, 
-            height=80,
-            fonts=[
-                # Will use default fonts if custom fonts not available
-            ]
-        )
+        # Initialize image dimensions
+        self.width = 200
+        self.height = 80
+        
+        # Try to load a font, fallback to default if not available
+        try:
+            # Try to use a built-in Windows font
+            self.font = ImageFont.truetype("arial.ttf", 36)
+        except:
+            try:
+                # Fallback to default font with larger size
+                self.font = ImageFont.load_default()
+            except:
+                self.font = None
     
     def generate_random_text(self):
         """
@@ -120,13 +127,44 @@ class CaptchaDatasetGenerator:
             bool: True if successful, False otherwise
         """
         try:
-            # Generate base CAPTCHA image
-            image_data = self.image_captcha.generate(text)
-            image = Image.open(image_data)
+            # Create a new image with white background
+            image = Image.new('RGB', (self.width, self.height), 'white')
+            draw = ImageDraw.Draw(image)
             
-            # Convert to RGB if necessary
-            if image.mode != 'RGB':
-                image = image.convert('RGB')
+            # Calculate text positioning
+            if self.font:
+                # Get text bounding box
+                bbox = draw.textbbox((0, 0), text, font=self.font)
+                text_width = bbox[2] - bbox[0]
+                text_height = bbox[3] - bbox[1]
+            else:
+                # Estimate dimensions for default font
+                text_width = len(text) * 10
+                text_height = 15
+            
+            # Center the text
+            x = (self.width - text_width) // 2
+            y = (self.height - text_height) // 2
+            
+            # Add some randomization to position
+            x += random.randint(-10, 10)
+            y += random.randint(-5, 5)
+            
+            # Choose random text color (dark colors)
+            colors = ['black', 'darkblue', 'darkred', 'darkgreen', 'purple']
+            text_color = random.choice(colors)
+            
+            # Draw the text
+            draw.text((x, y), text, fill=text_color, font=self.font)
+            
+            # Add some random lines for distortion
+            for _ in range(random.randint(2, 5)):
+                start_x = random.randint(0, self.width)
+                start_y = random.randint(0, self.height)
+                end_x = random.randint(0, self.width)
+                end_y = random.randint(0, self.height)
+                line_color = random.choice(['gray', 'lightgray', 'darkgray'])
+                draw.line([(start_x, start_y), (end_x, end_y)], fill=line_color, width=1)
             
             # Apply random distortions and noise
             image = self.add_distortions(image)

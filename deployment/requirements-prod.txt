@@ -1,0 +1,26 @@
+# Production dependencies for RVR AI CAPTCHA SOLVER
+# Core web framework
+flask==2.3.3
+gunicorn==21.2.0
+
+# Machine learning (CPU-optimized for cost efficiency)
+tensorflow-cpu==2.13.0
+numpy==1.24.3
+
+# Image processing
+opencv-python-headless==4.8.0.76
+pillow==10.0.0
+
+# Data handling
+pandas==2.1.1
+
+# Production utilities
+python-dotenv==1.0.0
+requests==2.31.0
+
+# Monitoring and logging
+prometheus-client==0.17.1
+structlog==23.1.0
+
+# Security
+werkzeug==2.3.7

@@ -1,6 +1,6 @@
 """
-CAPTCHA Solver Demo App
-Modern Streamlit interface for AI CAPTCHA recognition with human vs AI comparison.
+Modern AI CAPTCHA Solver - Minimalist UI
+Top-tier industry standard design with responsive layout
 """
 
 import streamlit as st
@@ -11,593 +11,907 @@ import random
 import pandas as pd
 from PIL import Image
 import numpy as np
-from datetime import datetime
 import io
+import base64
+from datetime import datetime
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Try importing OpenCV first to get better error messages
+try:
+    import cv2
+except ImportError:
+    import subprocess
+    import sys
+    import streamlit as st
+    
+    st.error("""
+    ## 🚨 OpenCV Not Found
+    
+    The application requires OpenCV to run. Attempting to install it now...
+    """)
+    
+    try:
+        # Try installing opencv-python-headless
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
+        import cv2
+        st.rerun()  # Restart the app after successful installation
+    except Exception as e:
+        st.error(f"""
+        ## ❌ Installation Failed
+        
+        Could not install OpenCV automatically. Please run:
+        
+        ```bash
+        pip install opencv-python-headless
+        ```
+        
+        Error details: {str(e)}
+        """)
+        st.stop()
+
 try:
     from model.captcha_inference import CaptchaInference
-except ImportError:
-    # Fallback for Streamlit Cloud
-    import sys
-    import os
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-    from model.captcha_inference import CaptchaInference
+except ImportError as e:
+    import streamlit as st
+    st.error(f"""
+    ## 🚨 Import Error
+    
+    Could not import CAPTCHA inference module: {str(e)}
+    
+    Please ensure:
+    1. All requirements are installed: `pip install -r requirements.txt`
+    2. The model files are in the correct location
+    """)
+    st.stop()
 
+# ================================
+# MODERN DESIGN SYSTEM
+# ================================
 
-# Page configuration
-st.set_page_config(
-    page_title="AI CAPTCHA Solver",
-    page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
-
-# Custom CSS for modern, sleek design
-st.markdown("""
+def get_modern_css(theme='dark'):
+    """Generate modern CSS with theme support"""
+    
+    # Color palettes
+    if theme == 'dark':
+        colors = {
+            'bg-primary': '#0A0A0B',
+            'bg-secondary': '#151516', 
+            'bg-tertiary': '#1E1E20',
+            'bg-card': '#242427',
+            'bg-hover': '#2A2A2E',
+            'text-primary': '#FFFFFF',
+            'text-secondary': '#B8B8B8',
+            'text-muted': '#6B6B73',
+            'accent-primary': '#8B5FBF',
+            'accent-secondary': '#6B46C1',
+            'accent-light': '#A78BFA',
+            'border': '#2D2D31',
+            'border-hover': '#404046',
+            'shadow': 'rgba(0, 0, 0, 0.3)',
+            'shadow-strong': 'rgba(0, 0, 0, 0.5)'
+        }
+    else:  # light theme
+        colors = {
+            'bg-primary': '#FAFAFA',
+            'bg-secondary': '#FFFFFF',
+            'bg-tertiary': '#F5F5F7',
+            'bg-card': '#FFFFFF',
+            'bg-hover': '#F0F0F2',
+            'text-primary': '#1A1A1B',
+            'text-secondary': '#525259',
+            'text-muted': '#8E8E93',
+            'accent-primary': '#8B5FBF',
+            'accent-secondary': '#6B46C1',
+            'accent-light': '#A78BFA',
+            'border': '#E5E5E7',
+            'border-hover': '#D1D1D6',
+            'shadow': 'rgba(0, 0, 0, 0.1)',
+            'shadow-strong': 'rgba(0, 0, 0, 0.15)'
+        }
+    
+    return f"""
 <style>
-    /* Import Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    /* Global styles */
-    .main {
-        font-family: 'Inter', sans-serif;
-    }
+    /* CSS Custom Properties */
+    :root {{
+        --bg-primary: {colors['bg-primary']};
+        --bg-secondary: {colors['bg-secondary']};
+        --bg-tertiary: {colors['bg-tertiary']};
+        --bg-card: {colors['bg-card']};
+        --bg-hover: {colors['bg-hover']};
+        --text-primary: {colors['text-primary']};
+        --text-secondary: {colors['text-secondary']};
+        --text-muted: {colors['text-muted']};
+        --accent-primary: {colors['accent-primary']};
+        --accent-secondary: {colors['accent-secondary']};
+        --accent-light: {colors['accent-light']};
+        --border: {colors['border']};
+        --border-hover: {colors['border-hover']};
+        --shadow: {colors['shadow']};
+        --shadow-strong: {colors['shadow-strong']};
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 1rem;
+        --spacing-md: 1.5rem;
+        --spacing-lg: 2rem;
+        --spacing-xl: 3rem;
+    }}
     
-    /* Header styling */
-    .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
+    /* Global Reset & Base Styles */
+    * {{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }}
+    
+    html, body {{
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }}
+    
+    .stApp {{
+        background: var(--bg-primary);
+        min-height: 100vh;
+    }}
+    
+    /* Hide Streamlit Elements */
+    #MainMenu {{ visibility: hidden; }}
+    footer {{ visibility: hidden; }}
+    header {{ visibility: hidden; }}
+    .stDeployButton {{ display: none; }}
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {{
+        width: 6px;
+    }}
+    
+    ::-webkit-scrollbar-track {{
+        background: var(--bg-secondary);
+    }}
+    
+    ::-webkit-scrollbar-thumb {{
+        background: var(--border-hover);
+        border-radius: 10px;
+    }}
+    
+    ::-webkit-scrollbar-thumb:hover {{
+        background: var(--text-muted);
+    }}
+    
+    /* Layout Components */
+    .main-container {{
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-md);
+    }}
+    
+    .header {{
         text-align: center;
-        color: white;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
+        margin-bottom: var(--spacing-xl);
+        padding: var(--spacing-lg) 0;
+    }}
     
-    .main-header h1 {
-        font-size: 3rem;
+    .header h1 {{
+        font-size: clamp(2rem, 5vw, 3.5rem);
         font-weight: 700;
-        margin: 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: var(--spacing-sm);
+    }}
     
-    .main-header p {
-        font-size: 1.2rem;
-        margin: 0.5rem 0 0 0;
-        opacity: 0.9;
-    }
+    .header p {{
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        font-weight: 400;
+        max-width: 600px;
+        margin: 0 auto;
+    }}
     
-    /* Card styling */
-    .demo-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        border: 1px solid #f0f0f0;
-        margin-bottom: 1.5rem;
-    }
-    
-    .demo-card h3 {
-        color: #2c3e50;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        font-size: 1.4rem;
-    }
-    
-    /* Results styling */
-    .result-success {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        text-align: center;
-        margin: 1rem 0;
-        box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
-    }
-    
-    .result-success h2 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0;
-        letter-spacing: 0.2em;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    .confidence-bar {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 0.5rem;
-        margin: 1rem 0;
-    }
-    
-    .confidence-fill {
-        background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #0abde3);
-        height: 20px;
-        border-radius: 8px;
-        transition: width 0.8s ease;
-    }
-    
-    /* Metrics styling */
-    .metric-container {
-        display: flex;
-        justify-content: space-around;
-        margin: 1.5rem 0;
-    }
-    
-    .metric-item {
-        text-align: center;
-        padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 10px;
-        min-width: 120px;
-    }
-    
-    .metric-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin: 0;
-    }
-    
-    .metric-label {
-        font-size: 0.9rem;
-        color: #7f8c8d;
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    /* Button styling */
-    .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        font-size: 1rem;
+    /* Cards */
+    .card {{
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
+        box-shadow: 0 2px 12px var(--shadow);
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-    }
+    }}
     
-    .stButton > button:hover {
+    .card:hover {{
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-    }
+        box-shadow: 0 8px 32px var(--shadow-strong);
+        border-color: var(--border-hover);
+    }}
     
-    /* Stopwatch styling */
-    .stopwatch {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-        color: white;
-        padding: 1rem;
-        border-radius: 10px;
+    .card-title {{
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }}
+    
+    .card-content {{
+        color: var(--text-secondary);
+        line-height: 1.7;
+    }}
+    
+    /* Results Display */
+    .prediction-result {{
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
         text-align: center;
-        margin: 1rem 0;
-        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
-    }
+        margin: var(--spacing-md) 0;
+    }}
     
-    .stopwatch-time {
+    .prediction-text {{
         font-size: 2rem;
         font-weight: 700;
-        font-family: 'Courier New', monospace;
-    }
+        color: var(--accent-primary);
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.2em;
+        margin: var(--spacing-md) 0;
+    }}
     
-    /* Comparison styling */
-    .vs-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 2rem 0;
-    }
+    /* Stats */
+    .stats-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-md);
+    }}
     
-    .vs-circle {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.2rem;
-        color: #2c3e50;
-        box-shadow: 0 5px 15px rgba(252, 182, 159, 0.4);
-    }
-    
-    /* Hide Streamlit elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .main-header h1 {
+    /* Responsive Design */
+    @media (max-width: 768px) {{
+        .main-container {{
+            padding: var(--spacing-sm);
+        }}
+        
+        .header h1 {{
             font-size: 2rem;
-        }
-        .metric-container {
-            flex-direction: column;
-            gap: 1rem;
-        }
-    }
-</style>
-""", unsafe_allow_html=True)
-
-
-@st.cache_resource
-def load_model():
-    """Load the trained CAPTCHA model."""
-    # Try both model paths with absolute paths
-    import os
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    model_path1 = os.path.join(base_dir, "model", "best_model.h5")
-    model_path2 = os.path.join(base_dir, "model", "model.h5")
+        }}
+        
+        .card {{
+            padding: var(--spacing-md);
+        }}
+        
+        .stats-grid {{
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }}
+    }}
     
-    if os.path.exists(model_path1):
-        return CaptchaInference(model_path1)
-    elif os.path.exists(model_path2):
-        return CaptchaInference(model_path2)
+    @media (max-width: 480px) {{
+        .stats-grid {{
+            grid-template-columns: 1fr;
+        }}
+        
+        .header p {{
+            font-size: 1rem;
+        }}
+        
+        .prediction-text {{
+            font-size: 1.5rem;
+        }}
+    }}
+    
+    /* Loading Animation */
+    .loading {{
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }}
+    
+    .spinner {{
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top: 2px solid var(--accent-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }}
+    
+    @keyframes spin {{
+        0% {{ transform: rotate(0deg); }}
+        100% {{ transform: rotate(360deg); }}
+    }}
+    
+    /* Fade animations */
+    .fade-in {{
+        animation: fadeIn 0.6s ease-out;
+    }}
+    
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: translateY(20px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
+    }}
+    
+    /* Enhanced Streamlit component styling */
+    .stButton > button {{
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: var(--radius-md) !important;
+        font-weight: 500 !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 0 4px 12px var(--shadow) !important;
+    }}
+    
+    .stButton > button:hover {{
+        transform: translateY(-3px) scale(1.02) !important;
+        box-shadow: 0 12px 32px rgba(139, 95, 191, 0.5) !important;
+        background: linear-gradient(135deg, var(--accent-light), var(--accent-primary)) !important;
+    }}
+    
+    .stButton > button[data-testid="button-secondary"] {{
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-hover) !important;
+    }}
+    
+    .stButton > button[data-testid="button-secondary"]:hover {{
+        background: var(--bg-hover) !important;
+        border-color: var(--accent-primary) !important;
+        color: var(--accent-primary) !important;
+    }}
+    
+    .stTabs [data-baseweb="tab-list"] {{
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        padding: 4px;
+        margin-bottom: var(--spacing-lg);
+    }}
+    
+    .stTabs [data-baseweb="tab"] {{
+        background: transparent;
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }}
+    
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {{
+        background: var(--accent-primary);
+        color: white;
+    }}
+    
+    .stFileUploader {{
+        background: var(--bg-tertiary);
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }}
+    
+    .stFileUploader::before {{
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--accent-primary), var(--accent-light));
+        border-radius: var(--radius-lg);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }}
+    
+    .stFileUploader:hover {{
+        border-color: transparent;
+        background: var(--bg-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px var(--shadow-strong);
+    }}
+    
+    .stFileUploader:hover::before {{
+        opacity: 1;
+    }}
+    
+    .stMetric {{
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        margin: var(--spacing-xs) 0;
+        transition: all 0.3s ease;
+        position: relative;
+    }}
+    
+    .stMetric:hover {{
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px var(--shadow);
+        border-color: var(--border-hover);
+    }}
+    
+    .stExpander {{
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        margin: var(--spacing-xs) 0;
+        transition: all 0.3s ease;
+    }}
+    
+    .stExpander:hover {{
+        border-color: var(--border-hover);
+        box-shadow: 0 2px 8px var(--shadow);
+    }}
+    
+    /* Image styling */
+    .stImage > img {{
+        border-radius: var(--radius-md);
+        box-shadow: 0 4px 16px var(--shadow);
+        transition: all 0.3s ease;
+    }}
+    
+    .stImage > img:hover {{
+        transform: scale(1.02);
+        box-shadow: 0 8px 24px var(--shadow-strong);
+    }}
+</style>
+"""
+
+# ================================
+# MODERN APPLICATION LOGIC
+# ================================
+
+def init_session_state():
+    """Initialize session state variables"""
+    if 'theme' not in st.session_state:
+        st.session_state.theme = 'dark'
+    if 'prediction_history' not in st.session_state:
+        st.session_state.prediction_history = []
+    if 'current_image' not in st.session_state:
+        st.session_state.current_image = None
+    if 'processing' not in st.session_state:
+        st.session_state.processing = False
+    if 'timer_start' not in st.session_state:
+        st.session_state.timer_start = None
+    if 'human_answer' not in st.session_state:
+        st.session_state.human_answer = ""
+    if 'challenge_active' not in st.session_state:
+        st.session_state.challenge_active = False
+    if 'ai_result' not in st.session_state:
+        st.session_state.ai_result = None
+
+def toggle_theme():
+    """Toggle between dark and light themes"""
+    st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
+    st.rerun()
+
+def get_random_sample_image():
+    """Get a random sample image from the dataset"""
+    dataset_dir = "dataset/images"
+    if os.path.exists(dataset_dir):
+        images = [f for f in os.listdir(dataset_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        if images:
+            return os.path.join(dataset_dir, random.choice(images))
     return None
 
-
-@st.cache_data
-def load_test_images():
-    """Load sample images from the test dataset."""
-    images_dir = "dataset/images"
-    labels_csv = "dataset/labels.csv"
-    
-    if not os.path.exists(images_dir) or not os.path.exists(labels_csv):
-        return [], {}
-    
-    # Load labels
-    try:
-        df = pd.read_csv(labels_csv)
-        labels = dict(zip(df['filename'], df['label']))
-    except:
-        labels = {}
-    
-    # Get sample images
-    image_files = [f for f in os.listdir(images_dir) if f.lower().endswith('.png')]
-    sample_images = random.sample(image_files, min(20, len(image_files)))
-    
-    return sample_images, labels
-
-
-def format_time(seconds):
-    """Format time in a readable format."""
-    if seconds < 1:
-        return f"{seconds*1000:.0f}ms"
-    else:
-        return f"{seconds:.2f}s"
-
-
 def main():
-    """Main Streamlit app."""
+    """Main application function"""
+    st.set_page_config(
+        page_title="AI CAPTCHA Solver",
+        page_icon="🤖",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+        menu_items=None
+    )
+    
+    # Initialize session state
+    init_session_state()
+    
+    # Apply CSS based on current theme
+    st.markdown(get_modern_css(st.session_state.theme), unsafe_allow_html=True)
+    
+    # Theme toggle button (fixed position)
+    theme_icon = "🌙" if st.session_state.theme == 'light' else "☀️"
+    theme_text = "Dark" if st.session_state.theme == 'light' else "Light"
+    
+    # Create columns for the theme toggle
+    col1, col2 = st.columns([6, 1])
+    with col2:
+        if st.button(f"{theme_icon} {theme_text}", key="theme_toggle", help="Toggle theme"):
+            toggle_theme()
+    
+    # Main container
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
     
     # Header
     st.markdown("""
-    <div class="main-header">
-        <h1>🤖 AI CAPTCHA Solver</h1>
-        <p>Advanced CNN model that solves CAPTCHAs humans struggle with</p>
+    <div class="header fade-in">
+        <h1>AI CAPTCHA Solver</h1>
+        <p>Advanced neural network powered CAPTCHA recognition with real-time analysis and confidence scoring</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Load model
-    model = load_model()
-    if model is None:
-        st.error("❌ **Model not found!** Please train the model first by running `python run_model_training.py`")
-        st.stop()
+    # Initialize inference system
+    try:
+        model_path = "model/best_model.h5"
+        inference_system = CaptchaInference(model_path)
+        model_available = True
+    except Exception as e:
+        st.error(f"⚠️ Model initialization failed: {str(e)}")
+        st.info("🎭 Running in demo mode with mock predictions")
+        try:
+            inference_system = CaptchaInference("dummy_path")
+            model_available = False
+        except:
+            st.error("Failed to initialize inference system")
+            return
     
-    # Load test images
-    test_images, labels = load_test_images()
+    # Main content area
+    tab1, tab2, tab3 = st.tabs(["🔍 Analyze", "📊 Statistics", "ℹ️ About"])
     
-    # Main content
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.markdown('<div class="demo-card">', unsafe_allow_html=True)
-        st.markdown("### 📸 Choose CAPTCHA Image")
+    with tab1:
+        # Clean upload section with smooth interactions
+        col1, col2 = st.columns(2, gap="large")
         
-        # Image selection tabs
-        tab1, tab2 = st.tabs(["📁 Upload Image", "🎲 Test Dataset"])
-        
-        selected_image = None
-        image_source = None
-        true_label = None
-        
-        with tab1:
+        with col1:
             uploaded_file = st.file_uploader(
-                "Upload a CAPTCHA image",
-                type=['png', 'jpg', 'jpeg', 'bmp'],
-                help="Upload your own CAPTCHA image to test the AI model"
+                "📤 Upload CAPTCHA Image",
+                type=['png', 'jpg', 'jpeg'],
+                help="Drag and drop or click to upload"
             )
             
-            if uploaded_file is not None:
-                selected_image = Image.open(uploaded_file)
-                image_source = "uploaded"
-                st.success("✅ Image uploaded successfully!")
+        with col2:
+            if st.button("🎲 Try Random Sample", use_container_width=True, type="secondary"):
+                sample_path = get_random_sample_image()
+                if sample_path:
+                    st.session_state.current_image = sample_path
+                    st.session_state.uploaded_file = sample_path
         
-        with tab2:
-            if test_images:
-                selected_file = st.selectbox(
-                    "Choose from test dataset",
-                    [""] + test_images,
-                    help="Select a CAPTCHA from our test dataset"
-                )
-                
-                if selected_file:
-                    image_path = os.path.join("dataset/images", selected_file)
-                    selected_image = Image.open(image_path)
-                    image_source = "dataset"
-                    true_label = labels.get(selected_file, "Unknown")
-                    st.success(f"✅ Selected: {selected_file}")
-            else:
-                st.warning("⚠️ No test images found. Generate dataset first with `python run_dataset_generation.py`")
+        # Process image if available
+        image_to_process = None
+        image_source = None
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        if uploaded_file is not None:
+            # Save uploaded file temporarily
+            with open("temp_upload.png", "wb") as f:
+                f.write(uploaded_file.getvalue())
+            image_to_process = "temp_upload.png"
+            image_source = "uploaded"
+        elif hasattr(st.session_state, 'uploaded_file') and st.session_state.uploaded_file:
+            image_to_process = st.session_state.uploaded_file
+            image_source = "sample"
         
-        # Display selected image
-        if selected_image:
-            st.markdown('<div class="demo-card">', unsafe_allow_html=True)
-            st.markdown("### 🖼️ CAPTCHA Image")
+        if image_to_process:
+            # Load image for display
+            try:
+                display_image = Image.open(image_to_process)
+            except Exception as e:
+                st.error(f"Error loading image: {e}")
+                return
             
-            # Center the image
-            col_img1, col_img2, col_img3 = st.columns([1, 2, 1])
-            with col_img2:
-                st.image(selected_image, caption="CAPTCHA to solve", use_column_width=True)
+            st.markdown("---")
             
-            if true_label:
-                st.info(f"🎯 **Ground Truth:** {true_label}")
+            # Main image display - centered
+            col_spacer1, col_img, col_spacer2 = st.columns([1, 2, 1])
+            with col_img:
+                st.image(display_image, width=350, caption="🖼️ CAPTCHA Challenge")
             
-            st.markdown('</div>', unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown('<div class="demo-card">', unsafe_allow_html=True)
-        st.markdown("### 🚀 AI Solver")
-        
-        if selected_image:
-            if st.button("🤖 Solve CAPTCHA", use_container_width=True):
-                with st.spinner("🧠 AI is thinking..."):
-                    # Save uploaded image temporarily if needed
-                    if image_source == "uploaded":
-                        temp_path = "temp_captcha.png"
-                        selected_image.save(temp_path)
-                        image_path = temp_path
-                    else:
-                        image_path = os.path.join("dataset/images", selected_file)
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Action buttons row
+            col1, col2, col3 = st.columns([1, 1, 1])
+            
+            with col1:
+                if st.button("🤖 AI Solve", type="primary", use_container_width=True):
+                    st.session_state.ai_analyzing = True
                     
-                    # Predict with timing
-                    start_time = time.time()
-                    try:
-                        predicted_text, char_confidences, overall_confidence = model.predict_single_image(image_path)
-                        prediction_time = time.time() - start_time
-                        
-                        # Clean up temp file
-                        if image_source == "uploaded" and os.path.exists("temp_captcha.png"):
-                            os.remove("temp_captcha.png")
-                        
-                        # Store results in session state
-                        st.session_state.prediction = predicted_text
-                        st.session_state.confidence = overall_confidence
-                        st.session_state.char_confidences = char_confidences
-                        st.session_state.prediction_time = prediction_time
-                        st.session_state.true_label = true_label
-                        
-                    except Exception as e:
-                        st.error(f"❌ Prediction failed: {str(e)}")
-        else:
-            st.info("👆 Select an image first")
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Results section
-    if hasattr(st.session_state, 'prediction'):
-        st.markdown('<div class="demo-card">', unsafe_allow_html=True)
-        st.markdown("### 🎯 AI Results")
-        
-        # Main prediction result
-        st.markdown(f"""
-        <div class="result-success">
-            <h2>{st.session_state.prediction}</h2>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Metrics
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.markdown(f"""
-            <div class="metric-item">
-                <p class="metric-value">{st.session_state.confidence:.1%}</p>
-                <p class="metric-label">Confidence</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown(f"""
-            <div class="metric-item">
-                <p class="metric-value">{format_time(st.session_state.prediction_time)}</p>
-                <p class="metric-label">AI Time</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col3:
-            if st.session_state.true_label:
-                is_correct = st.session_state.prediction == st.session_state.true_label
-                accuracy_text = "✅ Correct" if is_correct else "❌ Wrong"
-                st.markdown(f"""
-                <div class="metric-item">
-                    <p class="metric-value" style="font-size: 1.5rem;">{accuracy_text}</p>
-                    <p class="metric-label">Accuracy</p>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div class="metric-item">
-                    <p class="metric-value">N/A</p>
-                    <p class="metric-label">Accuracy</p>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        # Confidence bar
-        st.markdown("#### Character Confidence")
-        confidence_html = ""
-        for i, conf in enumerate(st.session_state.char_confidences):
-            char = st.session_state.prediction[i] if i < len(st.session_state.prediction) else "?"
-            confidence_html += f"""
-            <div style="margin: 0.5rem 0;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-                    <span><strong>{char}</strong></span>
-                    <span>{conf:.1%}</span>
-                </div>
-                <div class="confidence-bar">
-                    <div class="confidence-fill" style="width: {conf*100}%;"></div>
-                </div>
-            </div>
-            """
-        st.markdown(confidence_html, unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Human vs AI Challenge
-    st.markdown('<div class="demo-card">', unsafe_allow_html=True)
-    st.markdown("### 👨‍💻 Human vs AI Challenge")
-    
-    if selected_image:
-        col1, col2, col3 = st.columns([2, 1, 2])
-        
-        with col1:
-            st.markdown("**🤖 AI Performance**")
-            if hasattr(st.session_state, 'prediction'):
-                st.success(f"**Result:** {st.session_state.prediction}")
-                st.info(f"**Time:** {format_time(st.session_state.prediction_time)}")
-                st.info(f"**Confidence:** {st.session_state.confidence:.1%}")
-            else:
-                st.info("Run AI solver first")
-        
-        with col2:
-            st.markdown('<div class="vs-circle">VS</div>', unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown("**👨‍💻 Your Turn**")
+            with col2:
+                if not st.session_state.challenge_active:
+                    if st.button("⏱️ Human Challenge", type="secondary", use_container_width=True):
+                        st.session_state.challenge_active = True
+                        st.session_state.timer_start = time.time()
+                        st.session_state.human_answer = ""
+                        st.rerun()
+                else:
+                    if st.button("✅ Submit Answer", type="secondary", use_container_width=True):
+                        if st.session_state.human_answer:
+                            human_time = time.time() - st.session_state.timer_start
+                            st.session_state.human_time = human_time
+                            st.session_state.challenge_active = False
+                            st.rerun()
             
-            # Initialize stopwatch state
-            if 'stopwatch_running' not in st.session_state:
-                st.session_state.stopwatch_running = False
-                st.session_state.start_time = None
-                st.session_state.human_time = None
-            
-            # Stopwatch display
-            if st.session_state.stopwatch_running and st.session_state.start_time:
-                current_time = time.time() - st.session_state.start_time
-                st.markdown(f"""
-                <div class="stopwatch">
-                    <div class="stopwatch-time">{format_time(current_time)}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            elif st.session_state.human_time:
-                st.markdown(f"""
-                <div class="stopwatch">
-                    <div class="stopwatch-time">{format_time(st.session_state.human_time)}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown("""
-                <div class="stopwatch">
-                    <div class="stopwatch-time">0.00s</div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            # Human input
-            human_answer = st.text_input(
-                "Type what you see:",
-                max_chars=5,
-                placeholder="Enter 5 characters",
-                key="human_input"
-            )
-            
-            col_btn1, col_btn2 = st.columns(2)
-            
-            with col_btn1:
-                if st.button("⏱️ Start Timer", use_container_width=True):
-                    st.session_state.stopwatch_running = True
-                    st.session_state.start_time = time.time()
-                    st.session_state.human_time = None
-                    st.rerun()
-            
-            with col_btn2:
-                if st.button("⏹️ Stop Timer", use_container_width=True):
-                    if st.session_state.stopwatch_running and st.session_state.start_time:
-                        st.session_state.human_time = time.time() - st.session_state.start_time
-                        st.session_state.stopwatch_running = False
+            with col3:
+                if st.button("🔄 New Image", use_container_width=True):
+                    sample_path = get_random_sample_image()
+                    if sample_path:
+                        st.session_state.current_image = sample_path
+                        st.session_state.uploaded_file = sample_path
+                        st.session_state.challenge_active = False
+                        st.session_state.ai_result = None
                         st.rerun()
             
-            # Show human results
-            if human_answer and len(human_answer) == 5:
-                if st.session_state.true_label:
-                    is_correct = human_answer.upper() == st.session_state.true_label
-                    if is_correct:
-                        st.success("✅ Correct!")
-                    else:
-                        st.error("❌ Incorrect")
+            # Human challenge input
+            if st.session_state.challenge_active:
+                st.markdown("<br>", unsafe_allow_html=True)
+                col_timer, col_input = st.columns([1, 2])
                 
-                if st.session_state.human_time:
-                    st.info(f"**Your Time:** {format_time(st.session_state.human_time)}")
-    else:
-        st.info("👆 Select a CAPTCHA image to start the challenge")
+                with col_timer:
+                    elapsed = time.time() - st.session_state.timer_start
+                    st.metric("⏰ Your Time", f"{elapsed:.1f}s")
+                    
+                with col_input:
+                    st.session_state.human_answer = st.text_input(
+                        "Enter CAPTCHA text:",
+                        value=st.session_state.human_answer,
+                        max_chars=5,
+                        placeholder="Type what you see..."
+                    )
+            
+            # Process AI analysis
+            if hasattr(st.session_state, 'ai_analyzing') and st.session_state.ai_analyzing:
+                with st.spinner("🔄 AI Processing..."):
+                    try:
+                        start_time = time.time()
+                        predicted_text, char_confidences, overall_confidence = inference_system.predict_single_image(image_to_process)
+                        end_time = time.time()
+                        
+                        processing_time = (end_time - start_time) * 1000  # Convert to ms
+                        
+                        # Store AI result
+                        st.session_state.ai_result = {
+                            'text': predicted_text,
+                            'confidence': overall_confidence,
+                            'time_ms': processing_time,
+                            'char_confidences': char_confidences
+                        }
+                        
+                        # Add to prediction history
+                        st.session_state.prediction_history.append({
+                            'timestamp': datetime.now(),
+                            'predicted_text': predicted_text,
+                            'confidence': overall_confidence,
+                            'processing_time': processing_time,
+                            'source': image_source
+                        })
+                        
+                        st.session_state.ai_analyzing = False
+                        st.rerun()
+                        
+                    except Exception as e:
+                        st.error(f"❌ AI Analysis failed: {str(e)}")
+                        st.session_state.ai_analyzing = False
+            
+            # Display results section
+            if st.session_state.ai_result or hasattr(st.session_state, 'human_time'):
+                st.markdown("---")
+                st.markdown("### 🏆 Results")
+                
+                col_ai, col_vs, col_human = st.columns([2, 1, 2])
+                
+                # AI Results
+                with col_ai:
+                    if st.session_state.ai_result:
+                        ai_data = st.session_state.ai_result
+                        st.markdown("""
+                        <div style='text-align: center; padding: 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border);'>
+                            <h4>🤖 AI Solution</h4>
+                            <div style='font-size: 2rem; font-weight: bold; color: var(--accent-primary); font-family: monospace; margin: 1rem 0;'>{}</div>
+                            <div style='color: var(--text-secondary);'>Time: {:.0f}ms | Confidence: {:.1f}%</div>
+                        </div>
+                        """.format(ai_data['text'], ai_data['time_ms'], ai_data['confidence']*100), unsafe_allow_html=True)
+                
+                # VS section
+                with col_vs:
+                    st.markdown("""
+                    <div style='text-align: center; padding: 2rem 0;'>
+                        <h2 style='color: var(--accent-primary);'>VS</h2>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # Human Results
+                with col_human:
+                    if hasattr(st.session_state, 'human_time'):
+                        # Get ground truth for accuracy check
+                        actual_answer = None
+                        if image_to_process and 'captcha_' in os.path.basename(image_to_process):
+                            try:
+                                labels_path = os.path.join('dataset', 'labels.csv')
+                                if os.path.exists(labels_path):
+                                    import pandas as pd
+                                    labels_df = pd.read_csv(labels_path)
+                                    filename = os.path.basename(image_to_process)
+                                    match = labels_df[labels_df['filename'] == filename]
+                                    if not match.empty:
+                                        actual_answer = match.iloc[0]['label']
+                            except:
+                                pass
+                        
+                        human_correct = st.session_state.human_answer.upper() == (actual_answer if actual_answer else "UNKNOWN")
+                        accuracy_text = "✅ Correct" if human_correct else "❌ Incorrect"
+                        
+                        st.markdown("""
+                        <div style='text-align: center; padding: 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border);'>
+                            <h4>👤 Your Solution</h4>
+                            <div style='font-size: 2rem; font-weight: bold; color: var(--text-primary); font-family: monospace; margin: 1rem 0;'>{}</div>
+                            <div style='color: var(--text-secondary);'>Time: {:.1f}s | {}</div>
+                        </div>
+                        """.format(st.session_state.human_answer.upper(), st.session_state.human_time, accuracy_text), unsafe_allow_html=True)
+                    else:
+                        st.markdown("""
+                        <div style='text-align: center; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-lg); border: 2px dashed var(--border);'>
+                            <h4>👤 Human Challenge</h4>
+                            <p style='color: var(--text-muted); margin: 1rem 0;'>Start the challenge to compete!</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Winner announcement
+                if st.session_state.ai_result and hasattr(st.session_state, 'human_time'):
+                    ai_time_s = st.session_state.ai_result['time_ms'] / 1000
+                    human_time_s = st.session_state.human_time
+                    
+                    if ai_time_s < human_time_s:
+                        winner = "🤖 AI Wins!"
+                        speed_diff = f"AI was {human_time_s/ai_time_s:.1f}x faster"
+                    else:
+                        winner = "👤 Human Wins!"
+                        speed_diff = f"Human was {ai_time_s/human_time_s:.1f}x faster"
+                    
+                    st.markdown(f"""
+                    <div style='text-align: center; padding: 1.5rem; background: linear-gradient(135deg, var(--accent-primary), var(--accent-light)); border-radius: var(--radius-lg); margin: 1rem 0; color: white;'>
+                        <h3>{winner}</h3>
+                        <p>{speed_diff}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # Character analysis in expandable
+                if st.session_state.ai_result and st.session_state.ai_result.get('char_confidences'):
+                    with st.expander("🔍 Detailed Character Analysis", expanded=False):
+                        char_confidences = st.session_state.ai_result['char_confidences']
+                        predicted_text = st.session_state.ai_result['text']
+                        
+                        if len(char_confidences) == len(predicted_text):
+                            char_cols = st.columns(len(predicted_text))
+                            for i, (char, conf) in enumerate(zip(predicted_text, char_confidences)):
+                                with char_cols[i]:
+                                    st.metric(
+                                        label=f"'{char}'",
+                                        value=f"{conf*100:.1f}%"
+                                    )
     
-    st.markdown('</div>', unsafe_allow_html=True)
+    with tab2:
+        st.markdown("### 📈 Performance Statistics")
+        
+        if st.session_state.prediction_history:
+            history = st.session_state.prediction_history
+            
+            # Clean summary stats
+            total_predictions = len(history)
+            avg_confidence = np.mean([h['confidence'] for h in history]) * 100
+            avg_processing_time = np.mean([h['processing_time'] for h in history])
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Total Predictions", total_predictions)
+            with col2: 
+                st.metric("Average Confidence", f"{avg_confidence:.1f}%")
+            with col3:
+                st.metric("Average Speed", f"{avg_processing_time:.0f}ms")
+            
+            # Recent predictions
+            st.markdown("### Recent Predictions")
+            
+            for i, pred in enumerate(reversed(history[-10:])):
+                with st.expander(f"Prediction {len(history)-i}: {pred['predicted_text']} ({pred['confidence']*100:.1f}%)"):
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.write(f"**Time:** {pred['timestamp'].strftime('%H:%M:%S')}")
+                    with col2:
+                        st.write(f"**Source:** {pred['source'].title()}")
+                    with col3:
+                        st.write(f"**Processing:** {pred['processing_time']:.0f}ms")
+        else:
+            st.info("📊 No predictions yet. Analyze some CAPTCHAs to see statistics here!")
     
-    # Performance comparison
-    if (hasattr(st.session_state, 'prediction') and 
-        st.session_state.human_time and 
-        human_answer and len(human_answer) == 5):
+    with tab3:
+        st.markdown("### 🏦 Engineering Day Model Exhibition")
         
-        st.markdown('<div class="demo-card">', unsafe_allow_html=True)
-        st.markdown("### 📊 Performance Comparison")
+        # Team information
+        st.markdown("""
+        **Team:** B.Tech CSE 5th Semester  
+        **Backend:** Khiasuthong.T  
+        **Frontend:** Yoihenba  
+        """, unsafe_allow_html=True)
         
-        # Speed comparison
-        speed_ratio = st.session_state.human_time / st.session_state.prediction_time
+        st.markdown("---")
         
-        col1, col2 = st.columns(2)
+        # Clean project description
+        col1, col2 = st.columns(2, gap="large")
         
         with col1:
-            st.markdown("#### ⚡ Speed Analysis")
-            st.markdown(f"**AI Time:** {format_time(st.session_state.prediction_time)}")
-            st.markdown(f"**Human Time:** {format_time(st.session_state.human_time)}")
-            st.markdown(f"**AI is {speed_ratio:.1f}x faster!**")
+            st.markdown("""
+            **What it does:**  
+            Recognizes text in CAPTCHA images using deep learning. 
+            The CNN model processes distorted images and predicts 
+            5-character alphanumeric codes with confidence scores.
+            
+            **Technical Stack:**
+            - TensorFlow/Keras for neural networks
+            - OpenCV for image processing  
+            - Streamlit for web interface
+            - Custom dataset of 5,000 synthetic CAPTCHAs
+            """)
         
         with col2:
-            if st.session_state.true_label:
-                st.markdown("#### 🎯 Accuracy Analysis")
-                ai_correct = st.session_state.prediction == st.session_state.true_label
-                human_correct = human_answer.upper() == st.session_state.true_label
-                
-                st.markdown(f"**AI Result:** {'✅ Correct' if ai_correct else '❌ Wrong'}")
-                st.markdown(f"**Human Result:** {'✅ Correct' if human_correct else '❌ Wrong'}")
-                
-                if ai_correct and human_correct:
-                    st.success("🎉 Both got it right!")
-                elif ai_correct and not human_correct:
-                    st.info("🤖 AI wins this round!")
-                elif not ai_correct and human_correct:
-                    st.info("👨‍💻 Human wins this round!")
-                else:
-                    st.warning("😅 Both got it wrong!")
+            st.markdown("""
+            **Performance:**
+            - Speed: ~100ms per image
+            - Accuracy: 70-90% on test data
+            - Model: 2.1M parameters
+            - Runs locally without internet
+            
+            **Features:**
+            - Real-time prediction
+            - Character-wise confidence
+            - Dark/Light themes
+            - Mobile responsive design
+            """)
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        # Clean dataset info
+        with st.expander("📈 Dataset Details", expanded=False):
+            dataset_dir = "dataset/images"
+            labels_file = "dataset/labels.csv"
+            
+            if os.path.exists(dataset_dir) and os.path.exists(labels_file):
+                num_images = len([f for f in os.listdir(dataset_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))])
+                
+                try:
+                    df = pd.read_csv(labels_file)
+                    num_labels = len(df)
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric("Images Generated", f"{num_images:,}")
+                    with col2:
+                        st.metric("Labels Created", f"{num_labels:,}")
+                        
+                    if len(df) > 0:
+                        st.write("**Sample from dataset:**")
+                        sample_df = df.sample(min(3, len(df)))
+                        st.dataframe(sample_df, width=600)
+                        
+                except Exception as e:
+                    st.warning(f"Could not read labels file: {e}")
+            else:
+                st.info("Dataset will be generated when you run the training pipeline.")
     
     # Footer
-    st.markdown("---")
     st.markdown("""
-    <div style="text-align: center; color: #7f8c8d; padding: 1rem;">
-        <p>🚀 Built with TensorFlow, OpenCV, and Streamlit | 
-        <strong>AI CAPTCHA Solver</strong> - Engineering Day Demo</p>
+    <div style="text-align: center; padding: 2rem 0; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 3rem;">
+        <p>🤖 AI CAPTCHA Solver | Modern Neural Network Architecture</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Built with TensorFlow, Streamlit & Modern Web Technologies</p>
     </div>
     """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)  # Close main-container
 
-
+# ================================
+# RUN APPLICATION
+# ================================
 if __name__ == "__main__":
     main()
