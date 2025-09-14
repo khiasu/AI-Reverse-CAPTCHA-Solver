@@ -332,10 +332,8 @@ ls -la model/
 
 <div align="center">
 
-**🚀 Ready to solve CAPTCHAs with AI? Get started now!**
 
-[🔗 Live Demo](https://your-demo-url.com) • [📖 Documentation](https://your-docs-url.com) • [🎯 Examples](examples/)
 
-*Built with ❤️ for the AI/ML community & engineering day showcase🤓*
+*Built with ❤️ for the AI/ML enthusiast & engineering day showcase🤓*
 
 </div>
