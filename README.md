@@ -346,6 +346,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 [🔗 Live Demo](https://your-demo-url.com) • [📖 Documentation](https://your-docs-url.com) • [🎯 Examples](examples/)
 
-*Built with ❤️ for the AI/ML community*
+*Built with ❤️ for the AI/ML community & engineering day showcase🤓*
 
 </div>
