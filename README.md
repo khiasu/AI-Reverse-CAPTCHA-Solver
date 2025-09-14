@@ -321,22 +321,12 @@ python app.py --port 5001
 ls -la model/
 ```
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for complete details.
-
-## 🙏 Acknowledgments
-
-- TensorFlow team for the excellent deep learning framework
-- OpenCV community for image processing capabilities
-- Flask team for the lightweight web framework
-- The open-source community for inspiration and resources
 
 ## 📞 Support & Contact
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/your-username/rvr-ai-captcha-solver/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/your-username/rvr-ai-captcha-solver/discussions)
-- 📧 **Email**: your.email@example.com
+- 🐛 **Issues**: [GitHub Issues](https://github.com/khiasu/rvr-ai-captcha-solver/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/khiasu/rvr-ai-captcha-solver/discussions)
+- 📧 **Email**: khiasu2vis@gmail.com
 
 ---
 
