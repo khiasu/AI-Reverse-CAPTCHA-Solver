@@ -1,15 +1,8 @@
 # 🤖 REVERSE AI CAPTCHA SOLVER
 
-**Advanced AI-Powered CAPTCHA Recognition System**
-
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)](https://tensorflow.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Accuracy](https://img.shields.io/badge/Accuracy-85%25+-brightgreen.svg)](#performance)
-
 A Convolutional Neural Network (CNN) system that automatically recognizes and solves text-based CAPTCHAs with high accuracy. Features real-time human vs AI comparison.
 
-## 🏗️ System Architecture
+
 
 ### Core Components
 
@@ -19,6 +12,7 @@ A Convolutional Neural Network (CNN) system that automatically recognizes and so
 | **CNN Architecture** | Multi-output deep learning model | TensorFlow, Keras |
 | **Web Application** | Interactive demo and API | Flask, JavaScript |
 | **Optimization** | Model compression and acceleration | TensorFlow Lite, Mixed Precision |
+
 
 ## 🚀 Quick Start Guide
 
