@@ -1,4 +1,4 @@
-# 🤖 RVR AI CAPTCHA SOLVER
+# 🤖 REVERSE AI CAPTCHA SOLVER
 
 **Advanced AI-Powered CAPTCHA Recognition System**
 
@@ -7,37 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Accuracy](https://img.shields.io/badge/Accuracy-85%25+-brightgreen.svg)](#performance)
 
-A cutting-edge Convolutional Neural Network (CNN) system that automatically recognizes and solves text-based CAPTCHAs with high accuracy. Features real-time human vs AI comparison and production-ready deployment optimizations.
-
-## 🎯 Project Overview
-
-This project demonstrates state-of-the-art deep learning techniques for CAPTCHA recognition, featuring a complete end-to-end pipeline from data preprocessing to web deployment. Built as a comprehensive AI engineering showcase with modern MLOps practices.
-
-## ✨ Key Features
-
-### 🧠 Advanced AI Capabilities
-- **Multi-Character CNN**: Simultaneous 5-character recognition with 36-class classification
-- **Smart Preprocessing**: Automated noise reduction and character segmentation
-- **Data Augmentation**: Rotation, scaling, brightness adjustment for robust training
-- **Mixed Precision Training**: FP16 optimization for faster training and inference
-
-### 🚀 Performance Optimizations
-- **Model Quantization**: TensorFlow Lite conversion with 4x compression
-- **Real-time Inference**: Sub-50ms response time per image
-- **Batch Processing**: Optimized for both single and batch predictions
-- **Memory Efficient**: Streamlined architecture with minimal footprint
-
-### 🖥️ Interactive Web Interface
-- **Live Demo**: Upload and test CAPTCHAs instantly
-- **Human vs AI Challenge**: Compare solving speed and accuracy
-- **Performance Analytics**: Real-time metrics and confidence scoring
-- **Responsive Design**: Mobile-friendly interface with smooth animations
-
-### 📊 Production Features
-- **Comprehensive Metrics**: Sequence accuracy, character-level performance
-- **Training Visualization**: Real-time loss curves and accuracy plots
-- **Model Benchmarking**: Automated speed and accuracy evaluation
-- **Deployment Ready**: Docker support and cloud deployment guides
+A Convolutional Neural Network (CNN) system that automatically recognizes and solves text-based CAPTCHAs with high accuracy. Features real-time human vs AI comparison.
 
 ## 🏗️ System Architecture
 
@@ -113,33 +83,6 @@ python run_optimized_training.py \
     --no-mixed-precision
 ```
 
-## 📊 Performance Benchmarks
-
-### Model Performance
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Sequence Accuracy** | 85-90% | Full 5-character match |
-| **Character Accuracy** | 90-95% | Individual character recognition |
-| **Inference Speed** | <50ms | Single image on CPU |
-| **Model Size** | 8.2MB | Original model |
-| **Quantized Size** | 2.1MB | 4x compression ratio |
-
-### Training Results
-- **Dataset Size**: 5,000 CAPTCHA images
-- **Training Time**: ~30 minutes (GPU) / ~2 hours (CPU)
-- **Convergence**: Typically within 25-35 epochs
-- **Memory Usage**: <4GB during training
-
-### Hardware Requirements
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| **RAM** | 4GB | 8GB+ |
-| **CPU** | 2 cores | 4+ cores |
-| **GPU** | None | CUDA-compatible (optional) |
-| **Storage** | 1GB | 2GB+ |
-
-## 🔬 Technical Deep Dive
-
 ### CNN Architecture Details
 
 ```python
@@ -158,16 +101,6 @@ Model Configuration:
 Total Parameters: ~2.1M
 Trainable Parameters: ~2.1M
 ```
-
-### Key Innovations
-
-1. **Multi-Output Architecture**: Instead of treating CAPTCHA as a single classification task, we use 5 separate classification heads for each character position, enabling parallel processing and better accuracy.
-
-2. **Advanced Data Augmentation**: Carefully tuned transformations that preserve character readability while increasing model robustness.
-
-3. **Optimized Training Pipeline**: Learning rate scheduling, mixed precision training, and early stopping for efficient resource utilization.
-
-4. **Production Optimizations**: Model quantization and TensorFlow Lite conversion for deployment efficiency.
 
 ## 📁 Project Structure
 
@@ -206,15 +139,6 @@ RVR-AI-CAPTCHA-SOLVER/
 └── 📄 README.md                     # This comprehensive guide
 ```
 
-## 🚀 Deployment Guide
-
-See our comprehensive deployment guides for different platforms:
-
-- **[Vercel Deployment](deployment/deploy_guides/VERCEL.md)** - Free serverless deployment
-- **[Railway Deployment](deployment/deploy_guides/RAILWAY.md)** - Full-stack hosting
-- **[Docker Deployment](deployment/deploy_guides/DOCKER.md)** - Containerized deployment
-- **[Local Production](deployment/deploy_guides/LOCAL_PROD.md)** - Production-ready local setup
-
 ## 🔧 Configuration Options
 
 ### Training Parameters
@@ -250,47 +174,6 @@ MODEL_PATH = 'model/best_model.keras'  # Trained model location
 MAX_FILE_SIZE = 5 * 1024 * 1024        # 5MB upload limit
 ```
 
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Make your changes**
-4. **Run tests**: `python -m pytest tests/`
-5. **Commit changes**: `git commit -m 'Add amazing feature'`
-6. **Push to branch**: `git push origin feature/amazing-feature`
-7. **Open a Pull Request**
-
-### Development Setup
-
-```bash
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-pytest tests/ --cov=model --cov=data_preprocessing
-
-# Code formatting
-black .
-flake8 .
-```
-
-## 📝 Changelog
-
-### v2.0.0 (Latest)
-- ✅ Enhanced training with data augmentation
-- ✅ Mixed precision training support
-- ✅ Model quantization for deployment
-- ✅ Comprehensive deployment guides
-- ✅ Real-time performance benchmarking
-- ✅ Improved web interface with animations
-
-### v1.0.0
-- ✅ Basic CNN model implementation
-- ✅ Web demo interface
-- ✅ Training pipeline
-
 ## 🐛 Troubleshooting
 
 ### Common Issues
@@ -320,14 +203,6 @@ python app.py --port 5001
 # Ensure training completed successfully and model files exist
 ls -la model/
 ```
-
-
-## 📞 Support & Contact
-
-- 🐛 **Issues**: [GitHub Issues](https://github.com/khiasu/rvr-ai-captcha-solver/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/khiasu/rvr-ai-captcha-solver/discussions)
-- 📧 **Email**: khiasu2vis@gmail.com
-
 ---
 
 <div align="center">
