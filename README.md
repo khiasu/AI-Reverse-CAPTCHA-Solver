@@ -1,4 +1,4 @@
-# 🤖 REVERSE AI CAPTCHA SOLVER
+#  REVERSE AI CAPTCHA SOLVER
 
 A Convolutional Neural Network (CNN) system that automatically recognizes and solves text-based CAPTCHAs with high accuracy. Features real-time human vs AI comparison.
 
@@ -14,9 +14,8 @@ A Convolutional Neural Network (CNN) system that automatically recognizes and so
 | **Optimization** | Model compression and acceleration | TensorFlow Lite, Mixed Precision |
 
 
-## 🚀 Quick Start Guide
 
-### 📋 Prerequisites
+###  Prerequisites
 
 ```bash
 # Check Python version (3.8+ required)
@@ -30,7 +29,7 @@ cd rvr-ai-captcha-solver
 pip install -r requirements.txt
 ```
 
-### 🔧 Setup & Training
+### Setup & Training
 
 1. **Prepare Training Data**
    ```bash
@@ -61,7 +60,7 @@ pip install -r requirements.txt
 
 4. **Access Demo**: Open `http://localhost:5000` in your browser
 
-### ⚡ Advanced Usage
+### Advanced Usage
 
 ```bash
 # Training with specific optimizations
@@ -168,7 +167,7 @@ MODEL_PATH = 'model/best_model.keras'  # Trained model location
 MAX_FILE_SIZE = 5 * 1024 * 1024        # 5MB upload limit
 ```
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
